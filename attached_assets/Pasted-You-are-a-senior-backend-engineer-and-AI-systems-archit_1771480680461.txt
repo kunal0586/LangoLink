@@ -1,0 +1,162 @@
+You are a senior backend engineer and AI systems architect.
+
+IMPORTANT:
+This project is for a MOBILE APP (Android / iOS).
+DO NOT build any web UI.
+DO NOT build any frontend.
+Only backend + APIs + realtime socket server.
+
+OBJECTIVE:
+Build a BACKEND SYSTEM for a LIVE LANGUAGE TRANSLATOR MOBILE CHAT APP.
+
+-------------------------------------------------
+TECH STACK (STRICT)
+-------------------------------------------------
+- Node.js
+- Express.js
+- Socket.IO (real-time)
+- Firebase Auth (mobile token based)
+- Firestore OR MongoDB (multi-tenant)
+- OpenAI / Whisper APIs
+- Cloudinary / Firebase Storage
+- Replit compatible setup
+
+-------------------------------------------------
+CORE REQUIREMENTS
+-------------------------------------------------
+
+1. AUTHENTICATION (MOBILE APP READY)
+- Signup / Login via Firebase Auth
+- Token verification middleware
+- Logout support
+- Account delete API (delete all user data)
+- Profile photo upload API
+
+2. USER DATA ISOLATION (VERY IMPORTANT)
+- Each user data must be private
+- No user can access another user's data
+- Use userId based access control
+- Rooms and messages isolated by roomId + userId
+
+3. ROOM SYSTEM
+- API to CREATE ROOM
+- Auto-generate unique ROOM CODE
+- API to JOIN ROOM using code
+- Only joined users can access room
+- Room language configuration support
+
+4. REAL-TIME CHAT (SOCKET.IO)
+- Join room socket
+- Leave room socket
+- Send message socket
+- Receive message socket
+- Typing indicator
+- Online / offline status
+
+5. AI TRANSLATION ENGINE (CUSTOM LAYER)
+- Auto language detection
+- Translate text messages
+- Translate speech messages
+- Context-aware translation
+- Fallback translation if API fails
+- Return translated text + confidence score
+
+FLOW:
+Encrypted message →
+Decrypt on device →
+Send original text →
+Translate →
+Return translated text →
+Flutter app converts to voice
+
+6. SPEECH & VOICE APIs
+- Speech-to-Text API (Whisper)
+- Text-to-Speech API
+- Voice note upload support
+- Audio streaming support
+
+7. MEDIA SUPPORT
+- Image upload API
+- Video upload API
+- Voice note upload API
+- Secure file access
+
+8. END-TO-END ENCRYPTION SUPPORT
+IMPORTANT:
+Encryption happens on MOBILE APP (Flutter).
+
+Backend responsibilities:
+- Public key exchange API
+- Encrypted payload relay only
+- Backend NEVER sees plaintext
+- Store only encrypted data
+- Secure socket communication
+
+9. ADS & MONETIZATION SUPPORT
+- APIs to enable / disable ads
+- Ad configuration endpoints
+- Admin-ready monetization flags
+- Future premium user support
+
+10. ADMIN READY (NO UI)
+- Admin role support
+- APIs to:
+  - View total users
+  - View rooms count
+  - Block users
+  - Disable rooms
+  - Toggle ads
+
+-------------------------------------------------
+DATABASE STRUCTURE
+-------------------------------------------------
+Users:
+- userId
+- email
+- name
+- profilePhoto
+- publicKey
+- role
+- createdAt
+
+Rooms:
+- roomId
+- roomCode
+- createdBy
+- participants
+- languages
+- createdAt
+
+Messages:
+- messageId
+- roomId
+- senderId
+- encryptedPayload
+- messageType
+- timestamp
+
+-------------------------------------------------
+DELIVERABLES
+-------------------------------------------------
+- Complete backend source code
+- Socket.IO implementation
+- REST APIs
+- AI translation services
+- Speech APIs
+- Media upload logic
+- Environment variable config
+- Replit run configuration
+- README with API usage for Flutter app
+
+-------------------------------------------------
+RULES
+-------------------------------------------------
+- NO frontend
+- NO web UI
+- NO pseudo code
+- NO placeholders
+- Production-ready only
+- Modular & clean code
+- Must run on Replit without errors
+
+START BUILDING THE BACKEND NOW.
