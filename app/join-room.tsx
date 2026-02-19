@@ -1,13 +1,31 @@
-import { useState } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, Platform } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, Platform, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { apiRequest } from "@/lib/query-client";
+import { useAuth } from "@/lib/auth-context";
 import Colors from "@/constants/colors";
 
+const LANGUAGES = [
+  { code: "en", name: "English", flag: "EN" },
+  { code: "es", name: "Spanish", flag: "ES" },
+  { code: "fr", name: "French", flag: "FR" },
+  { code: "de", name: "German", flag: "DE" },
+  { code: "it", name: "Italian", flag: "IT" },
+  { code: "pt", name: "Portuguese", flag: "PT" },
+  { code: "ja", name: "Japanese", flag: "JA" },
+  { code: "ko", name: "Korean", flag: "KO" },
+  { code: "zh", name: "Chinese", flag: "ZH" },
+  { code: "ar", name: "Arabic", flag: "AR" },
+  { code: "hi", name: "Hindi", flag: "HI" },
+  { code: "ru", name: "Russian", flag: "RU" },
+];
+
 export default function JoinRoomScreen() {
+  const { user } = useAuth();
   const [roomCode, setRoomCode] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState(user?.preferredLanguage || "en");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -20,7 +38,10 @@ export default function JoinRoomScreen() {
     setLoading(true);
     setError("");
     try {
-      const res = await apiRequest("POST", "/api/rooms/join", { roomCode: code });
+      const res = await apiRequest("POST", "/api/rooms/join", { 
+        roomCode: code,
+        language: selectedLanguage 
+      });
       const room = await res.json();
       if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.dismiss();
@@ -51,18 +72,44 @@ export default function JoinRoomScreen() {
         </View>
       )}
 
-      <View style={styles.codeInput}>
-        <TextInput
-          style={styles.input}
-          placeholder="ABC123"
-          placeholderTextColor={Colors.dark.textMuted}
-          value={roomCode}
-          onChangeText={(t) => setRoomCode(t.toUpperCase().slice(0, 6))}
-          autoCapitalize="characters"
-          autoCorrect={false}
-          maxLength={6}
-          textAlign="center"
-        />
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Room Code</Text>
+        <View style={styles.codeInput}>
+          <TextInput
+            style={styles.input}
+            placeholder="ABC123"
+            placeholderTextColor={Colors.dark.textMuted}
+            value={roomCode}
+            onChangeText={(t) => setRoomCode(t.toUpperCase().slice(0, 6))}
+            autoCapitalize="characters"
+            autoCorrect={false}
+            maxLength={6}
+            textAlign="center"
+          />
+        </View>
+      </View>
+
+      <View style={styles.languageSection}>
+        <Text style={styles.label}>Your Language for this Room</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.languageGrid}>
+          {LANGUAGES.map((lang) => {
+            const selected = selectedLanguage === lang.code;
+            return (
+              <Pressable
+                key={lang.code}
+                style={[styles.languageChip, selected && styles.languageChipSelected]}
+                onPress={() => {
+                  if (Platform.OS !== "web") Haptics.selectionAsync();
+                  setSelectedLanguage(lang.code);
+                }}
+              >
+                <Text style={[styles.languageFlag, selected && styles.languageFlagSelected]}>{lang.flag}</Text>
+                <Text style={[styles.languageName, selected && styles.languageNameSelected]}>{lang.name}</Text>
+                {selected && <Ionicons name="checkmark-circle" size={16} color={Colors.dark.primary} />}
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       </View>
 
       <Pressable
@@ -86,7 +133,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.background,
     paddingHorizontal: 24,
     paddingTop: 24,
-    gap: 16,
+    gap: 20,
   },
   title: {
     fontSize: 22,
@@ -97,7 +144,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Inter_400Regular",
     color: Colors.dark.textSecondary,
-    marginTop: -8,
+    marginTop: -12,
   },
   errorContainer: {
     flexDirection: "row",
@@ -112,6 +159,14 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_500Medium",
     color: Colors.dark.error,
   },
+  inputGroup: {
+    gap: 8,
+  },
+  label: {
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
+    color: Colors.dark.textSecondary,
+  },
   codeInput: {
     backgroundColor: Colors.dark.inputBg,
     borderRadius: 14,
@@ -125,6 +180,44 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
     letterSpacing: 8,
     paddingHorizontal: 24,
+  },
+  languageSection: {
+    gap: 8,
+  },
+  languageGrid: {
+    gap: 8,
+    paddingRight: 8,
+  },
+  languageChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: Colors.dark.surface,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+  },
+  languageChipSelected: {
+    backgroundColor: Colors.dark.primaryMuted,
+    borderColor: "rgba(0, 212, 170, 0.4)",
+  },
+  languageFlag: {
+    fontSize: 12,
+    fontFamily: "Inter_700Bold",
+    color: Colors.dark.textMuted,
+  },
+  languageFlagSelected: {
+    color: Colors.dark.primary,
+  },
+  languageName: {
+    fontSize: 14,
+    fontFamily: "Inter_500Medium",
+    color: Colors.dark.textSecondary,
+  },
+  languageNameSelected: {
+    color: Colors.dark.text,
   },
   joinButton: {
     backgroundColor: Colors.dark.primary,

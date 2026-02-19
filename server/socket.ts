@@ -97,7 +97,8 @@ export function setupSocketIO(httpServer: HttpServer): Server {
       if (!room) return;
 
       const participants = await storage.getRoomParticipants(data.roomId);
-      const senderLang = await storage.getParticipantLanguage(data.roomId, currentUserId);
+      const senderParticipant = participants.find(p => p.userId === currentUserId);
+      const senderLang = senderParticipant?.language || "en";
       const targetLanguages = [...new Set(
         participants
           .map((p) => p.language)
